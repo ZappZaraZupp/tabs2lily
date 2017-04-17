@@ -9,6 +9,7 @@
 # A--
 # E--
 # d.h. Saite und -- am Begin der Zeile
+# es muss immer ein zeichen zwischen den tabs(=nummer) sein ueber alle Zeilen
 
 import re
 
@@ -26,15 +27,84 @@ a_Eis = ['e,',  'f,','fis,',  'g,','gis,',  'a,','ais,',  'b,',  'c','cis',  'd'
 a_Ees = ['e,',  'f,','ges,',  'g,', 'as,',  'a,','bes,',  'b,',  'c','des',  'd', 'es',  'e',  'f','ges',  'g', 'as',  'a','bes',  'b']
 
 
-o_file = open("testtab.txt","r")
 i=0
-for s_line in o_file:
-    i += 1
-    print 'Parsing line ',i,':',s_line
+s_tmp=""
 
-    if(re.match('^e--',s_line)):
-        print "e found - read all strings"
+with open("testtab.txt","r") as o_file:
+    while True:
+        s_line = o_file.readline()
+        if not s_line: break
+        i += 1
+        print 'Parsing line ',i,':',s_line
 
+        m = re.match('^e--.*$',s_line)
+        if m:
+            print "e found - read all strings"
+#todo: leerzeichen rausschmeissen
+            s_e = m.string
+            s_b = o_file.readline()
+            s_g = o_file.readline()
+            s_d = o_file.readline()
+            s_A = o_file.readline()
+            s_E = o_file.readline()
+
+            j=0
+            c=0
+            # Eine Spalte durchgehen
+            # beachte, dass es auch 2-Stellige Tabs geben kann
+            # noch schoener machen mit array und schleifen ;-)
+            while(j<len(s_e)):
+                if(re.match('\d',s_e[j])):
+                    if(re.match('\d',s_e[j+1])):
+                        s_tmp = s_tmp + a_eis[int(s_e[j]+s_e[j+1])]
+                        j=j+1
+                        c=c+1
+                    else:
+                        s_tmp = s_tmp + a_eis[int(s_e[j])]
+                        c=c+1
+                if(re.match('\d',s_b[j])):
+                    if(re.match('\d',s_b[j+1])):
+                        s_tmp = s_tmp + a_bis[int(s_b[j]+s_b[j+1])]
+                        j=j+1
+                        c=c+1
+                    else:
+                        s_tmp = s_tmp + a_bis[int(s_b[j])]
+                if(re.match('\d',s_g[j])):
+                    if(re.match('\d',s_g[j+1])):
+                        s_tmp = s_tmp + a_gis[int(s_g[j]+s_g[j+1])]
+                        j=j+1
+                        c=c+1
+                    else:
+                        s_tmp = s_tmp + a_gis[int(s_g[j])]
+                if(re.match('\d',s_d[j])):
+                    if(re.match('\d',s_d[j+1])):
+                        s_tmp = s_tmp + a_dis[int(s_d[j]+s_d[j+1])]
+                        j=j+1
+                        c=c+1
+                    else:
+                        s_tmp = s_tmp + a_dis[int(s_d[j])]
+                if(re.match('\d',s_A[j])):
+                    if(re.match('\d',s_A[j+1])):
+                        s_tmp = s_tmp + a_Ais[int(s_A[j]+s_A[j+1])]
+                        j=j+1
+                        c=c+1
+                    else:
+                        s_tmp = s_tmp + a_Ais[int(s_A[j])]
+                if(re.match('\d',s_E[j])):
+                    if(re.match('\d',s_E[j+1])):
+                        s_tmp = s_tmp + a_Eis[int(s_E[j]+s_E[j+1])]
+                        j=j+1
+                        c=c+1
+                    else:
+                        s_tmp = s_tmp + a_Eis[int(s_E[j])]
+
+                # Mehr als eine Note in der Spalte -> "< note note .. >"
+                if(c>1):
+                    s_tmp = '<' + s_tmp + '>'
+                print s_tmp
+                s_tmp=""
+                j=j+1
+                c = 0
 
 o_file.close()
 
